@@ -18,11 +18,21 @@ def _build_context(message: str, history: list) -> str:
     """
     Build input with conversation history so the agent remembers prior answers.
     Limits to last 10 exchanges to avoid token overflow.
+    Handles both tuple format [(user, bot), ...] and messages format [{"role":..., "content":...}, ...].
     """
     if not history:
         return message
     lines = []
-    for user_msg, bot_msg in history[-10:]:  # last 10 exchanges
+    for turn in history[-10:]:
+        user_msg, bot_msg = None, None
+        if isinstance(turn, (list, tuple)):
+            user_msg = turn[0] if len(turn) > 0 else None
+            bot_msg = turn[1] if len(turn) > 1 else None
+        elif isinstance(turn, dict):
+            if turn.get("role") == "user":
+                user_msg = turn.get("content", "")
+            else:
+                bot_msg = turn.get("content", "")
         if user_msg:
             lines.append(f"User: {user_msg}")
         if bot_msg:
