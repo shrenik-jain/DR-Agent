@@ -14,9 +14,27 @@ if not os.environ.get("OPENAI_API_KEY"):
 # Initialize the agent once at startup
 agent = create_dr_agent()
 
+def _build_context(message: str, history: list) -> str:
+    """
+    Build input with conversation history so the agent remembers prior answers.
+    Limits to last 10 exchanges to avoid token overflow.
+    """
+    if not history:
+        return message
+    lines = []
+    for user_msg, bot_msg in history[-10:]:  # last 10 exchanges
+        if user_msg:
+            lines.append(f"User: {user_msg}")
+        if bot_msg:
+            lines.append(f"Assistant: {bot_msg}")
+    lines.append(f"User: {message}")
+    return "\n\n".join(lines)
+
+
 def chat_with_agent(message, history):
     """
     Handle chat messages and return agent response.
+    Passes conversation history so the agent uses prior user answers.
     
     Args:
         message: User's input message
@@ -26,8 +44,8 @@ def chat_with_agent(message, history):
         Agent's response string
     """
     try:
-        # Invoke the agent with the user's message
-        result = agent.invoke({"input": message})
+        context = _build_context(message, history)
+        result = agent.invoke({"input": context})
         response = result["output"]
         return response
     

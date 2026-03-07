@@ -766,7 +766,7 @@ Your capabilities:
 5. Explain recommendations in clear, user-friendly language
 
 Process:
-1. UNDERSTAND  — Identify each appliance and its type: flexible | ev | hvac. Build a JSON list of appliance specs from the user message (partial specs are OK).
+1. UNDERSTAND  — Identify each appliance and its type: flexible | ev | hvac. Build a JSON list of appliance specs from the ENTIRE conversation (the input may include prior turns). Use ALL information the user has provided in any previous message — do not ask again for details they already gave.
 2. CHECK INPUTS — Call check_required_inputs with that JSON. If ready is false: respond to the user with the follow_up_questions only; do NOT call fetch_* or solve_dr_optimization. If ready is true: use the returned specs_with_defaults for the next steps.
 3. RETRIEVE    — Fetch prices, carbon, and (if HVAC present) weather forecast (only when inputs are ready).
 4. OPTIMISE    — Call solve_dr_optimization with specs_with_defaults and the fetched data.
@@ -838,8 +838,7 @@ HVAC parameter guidance:
 - If the user mentions a well-insulated or older home, you may adjust
   thermal_resistance (higher = better insulated) — but only if stated.
 
-For EV SoC as percentage: kwh = (pct/100) * battery_capacity_kwh
-Always quantify savings and explain WHY the schedule is optimal."""),
+For EV: you can pass partial info; the checker will infer the rest. Use energy_needed_kwh when the user says "need X kWh". Use initial_soc_pct and target_soc_pct (0–100) when they give percentages (e.g. "25% to 85%"). Omit start_hour/end_hour/max_charge_power_kw/battery_capacity_kwh if not given — defaults will be applied. For EV SoC as percentage: kwh = (pct/100) * battery_capacity_kwh. Always quantify savings and explain WHY the schedule is optimal."""),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad")
     ])
