@@ -53,14 +53,13 @@ demo = gr.ChatInterface(
     - "I want to run my dishwasher, dryer, and charge my EV - what's the best schedule?"
     - "How can I reduce my carbon footprint with my appliances?"
     
-    **Pro tip:** Include appliance details like energy needed (kWh), time window, and max power (kW) for best results!
+    **Pro tip:** Include appliance details like energy needed (kWh), time window, and max power (kW) for best results. If you leave details out, I'll ask follow-up questions and use sensible defaults where possible.
     """,
     examples=[
         "I need to charge my Tesla Model 3 tonight. It needs 16 kWh, I'll plug it in at 10 PM and need it by 7 AM. Max charging rate is 11 kW. Help me minimize cost!",
         "Schedule my appliances for tomorrow: EV needs 16 kWh (10 PM-7 AM, max 11 kW), Dishwasher needs 3.6 kWh (8 PM-11 PM, max 2 kW). My house limit is 15 kW.",
         "I want to reduce carbon emissions. Help schedule: EV 16 kWh (10 PM-7 AM, 11 kW max), Dryer 4.5 kWh (9 PM-midnight, 4 kW max). House limit 15 kW."
     ],
-    theme=gr.themes.Soft(),
 )
 
 if __name__ == "__main__":

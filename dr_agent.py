@@ -28,6 +28,8 @@ from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 import json
 
+from input_validation import validate_appliance_specs
+
 
 # ============================================================================
 # TOOLS: Data Retrieval
@@ -150,6 +152,37 @@ def fetch_weather_forecast(date: Optional[str] = None) -> str:
         "date": date or "tomorrow",
         "hourly_temperatures": temps_f,
         "units": "fahrenheit"
+    }, indent=2)
+
+
+@tool
+def check_required_inputs(appliances_json: str) -> str:
+    """
+    Check whether appliance specs have all required inputs for optimization.
+    Call this BEFORE solve_dr_optimization. Pass the JSON list (or single object)
+    of appliance specs you have inferred from the user.
+
+    Returns JSON with:
+      - ready: true if all required fields are present (or filled by defaults)
+      - specs_with_defaults: use this as appliances_json when calling solve_dr_optimization if ready is true
+      - follow_up_questions: list of questions to ask the user if ready is false
+      - missing_by_appliance: which fields are missing per appliance
+      - defaults_applied: which fields were filled from defaults
+      - error: message if JSON was invalid
+
+    If ready is false, respond to the user with the follow_up_questions and do NOT
+    call solve_dr_optimization until the user provides the missing information.
+    If ready is true, use specs_with_defaults and proceed to fetch prices/carbon/weather
+    and then call solve_dr_optimization.
+    """
+    result = validate_appliance_specs(appliances_json)
+    return json.dumps({
+        "ready": result["ready"],
+        "specs_with_defaults": result.get("specs_with_defaults", []),
+        "follow_up_questions": result.get("follow_up_questions", []),
+        "missing_by_appliance": result.get("missing_by_appliance", {}),
+        "defaults_applied": result.get("defaults_applied", {}),
+        "error": result.get("error"),
     }, indent=2)
 
 
@@ -718,7 +751,7 @@ def create_dr_agent(model_name: str = "gpt-4-turbo"):
         api_key=os.environ.get("OPENAI_API_KEY")
     )
 
-    tools = [fetch_sdge_prices, fetch_caiso_carbon,
+    tools = [check_required_inputs, fetch_sdge_prices, fetch_caiso_carbon,
              fetch_weather_forecast, solve_dr_optimization]
 
     prompt = ChatPromptTemplate.from_messages([
@@ -733,11 +766,14 @@ Your capabilities:
 5. Explain recommendations in clear, user-friendly language
 
 Process:
-1. UNDERSTAND  — Identify each appliance and its type: flexible | ev | hvac
-2. RETRIEVE    — Fetch prices, carbon, and (if HVAC present) weather forecast
-3. OPTIMISE    — Call solve_dr_optimization with all appliance specs
-4. EXPLAIN     — Report schedule, savings, indoor temperature trajectory for HVAC,
-                 SoC trajectory for EV, and the reasoning behind each choice
+1. UNDERSTAND  — Identify each appliance and its type: flexible | ev | hvac. Build a JSON list of appliance specs from the user message (partial specs are OK).
+2. CHECK INPUTS — Call check_required_inputs with that JSON. If ready is false: respond to the user with the follow_up_questions only; do NOT call fetch_* or solve_dr_optimization. If ready is true: use the returned specs_with_defaults for the next steps.
+3. RETRIEVE    — Fetch prices, carbon, and (if HVAC present) weather forecast (only when inputs are ready).
+4. OPTIMISE    — Call solve_dr_optimization with specs_with_defaults and the fetched data.
+5. EXPLAIN     — Report schedule, savings, indoor temperature trajectory for HVAC,
+                 SoC trajectory for EV, and the reasoning behind each choice.
+
+When the user message is vague (e.g. "help me charge my EV" with no numbers), still build the best partial spec you can (e.g. one EV with type "ev" and name "EV"), then call check_required_inputs. Use the returned follow_up_questions in your reply. Do not guess required numeric values; ask for them.
 
 ─── Appliance spec: flexible load ───────────────────────────────────────────
 {{
