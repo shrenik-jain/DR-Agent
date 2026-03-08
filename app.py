@@ -1,8 +1,3 @@
-"""
-app.py - Simple Gradio UI for DRAgent
-Run with: python app.py
-"""
-
 import os
 import gradio as gr
 from dr_agent import create_dr_agent
