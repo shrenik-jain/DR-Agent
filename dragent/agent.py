@@ -28,7 +28,7 @@ from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 import json
 
-from input_validation import validate_appliance_specs
+from dragent.input_validation import validate_appliance_specs
 
 
 # ============================================================================
@@ -742,13 +742,20 @@ def solve_dr_optimization(
 # AGENT SETUP
 # ============================================================================
 
-def create_dr_agent(model_name: str = "gpt-4-turbo"):
-    """Create the DRAgent using LangChain's agent framework."""
+def create_dr_agent(model_name: str = "gpt-4-turbo", *, streaming: bool = False):
+    """Create the DRAgent using LangChain's agent framework.
+
+    Args:
+        model_name: OpenAI chat model id.
+        streaming: If True, the underlying LLM emits token events (for UIs that
+            stream output via LangChain callbacks). Does not change tool-calling behaviour.
+    """
 
     llm = ChatOpenAI(
         model=model_name,
         temperature=0,
-        api_key=os.environ.get("OPENAI_API_KEY")
+        api_key=os.environ.get("OPENAI_API_KEY"),
+        streaming=streaming,
     )
 
     tools = [check_required_inputs, fetch_sdge_prices, fetch_caiso_carbon,

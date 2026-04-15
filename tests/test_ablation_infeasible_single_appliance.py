@@ -1,8 +1,8 @@
 """
-Ablation Test 01 of 10 — Appliance Count Scaling
+Ablation Test 04
 ==================================================
-Count  : 1 appliance (Dishwasher)
-Goal   : cost minimisation
+Count  : 1 appliance
+Goal   : cost minimisation (infeasibility checking)
 
 Baseline  — LLM answers the query directly from general knowledge.
             No tools, no solver. Savings figures are self-reported
@@ -14,21 +14,22 @@ Agentic   — Agent receives the same query, calls fetch_sdge_prices,
             actual solver computation.
 
 Run with:
-    python test_01_count1.py
+    python tests/test_ablation_infeasible_single_appliance.py
 """
 
 from dotenv import load_dotenv
 load_dotenv()
 
 import re
-from dr_agent import create_dr_agent, create_baseline_llm, run_baseline_recommendation
+from pathlib import Path
+from dragent import create_dr_agent, create_baseline_llm, run_baseline_recommendation
 
-QUERY = """I need to run my dishwasher tonight to save money.
-It needs 3.6 kWh of energy, I can run it any time between 8 PM and 11 PM,
-and it draws at most 2 kW. My household peak limit is 15 kW."""
+QUERY = """I need to schedule my EV tonight to save money.
+It needs 50 kWh, available 8 PM to 10 PM, and draws at most 7 kW.
+My household peak limit is 15 kW."""
 
 print("=" * 60)
-print("TEST 01 — 1 Appliance (Dishwasher)")
+print("TEST 04 - Infeasibility Testing")
 print("=" * 60)
 print(f"\nQuery:\n{QUERY}\n")
 
@@ -217,7 +218,7 @@ print(f"    Agentic  : {fmt(ag_feas)}")
 # When True, we check whether the agent correctly abstained rather than
 # fabricating a schedule. For golden-path tests this is always N/A.
 
-EXPECT_FAILURE = False
+EXPECT_FAILURE = True
 
 print(f"\n  Safe Fail (%)")
 if EXPECT_FAILURE:
@@ -279,7 +280,7 @@ print("      Agentic Cost Red. and Feas. are computed from the solver.")
 
 lines = []
 lines.append("=" * 60)
-lines.append("TEST 01 — 1 Appliance (Dishwasher)")
+lines.append("TEST 04 - Infeasibility Testing")
 lines.append("=" * 60)
 lines.append("\nQUERY")
 lines.append("-" * 60)
@@ -327,7 +328,8 @@ lines.append("=" * 60)
 lines.append("\nNote: Baseline Cost Red. is self-reported by the LLM and unverifiable.")
 lines.append("      Agentic Cost Red. and Feas. are computed from the solver.")
 
-with open("test_01_results.txt", "w") as f:
+_results_path = Path(__file__).resolve().parent.parent / f"{Path(__file__).stem}_results.txt"
+with open(_results_path, "w") as f:
     f.write("\n".join(lines))
 
-print("\nResults saved to test_01_results.txt")
+print(f"\nResults saved to {_results_path}")

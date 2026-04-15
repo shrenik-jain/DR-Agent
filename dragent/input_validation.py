@@ -8,7 +8,7 @@ import json
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from config import APPLIANCE_DEFAULTS, DEFAULT_HOUSEHOLD_PEAK_KW
+    from dragent.config import APPLIANCE_DEFAULTS, DEFAULT_HOUSEHOLD_PEAK_KW
 except ImportError:
     APPLIANCE_DEFAULTS = {}
     DEFAULT_HOUSEHOLD_PEAK_KW = 15.0
@@ -21,7 +21,7 @@ REQUIRED_EV = {
     "initial_soc_kwh", "target_soc_kwh", "battery_capacity_kwh",
     "max_charge_power_kw"
 }
-REQUIRED_HVAC = {"name"}  # All other HVAC fields have built-in defaults in dr_agent
+REQUIRED_HVAC = {"name"}  # All other HVAC fields have built-in defaults in the agent module
 
 # Optional fields with defaults we can apply without asking
 OPTIONAL_DEFAULTS_FLEXIBLE = {

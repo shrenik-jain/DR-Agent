@@ -26,7 +26,7 @@ User Query → LangChain Agent (Orchestrator)
     ┌───────────┼───────────────┐
     ↓           ↓               ↓
 Data Tools   Optimization    Explanation
-(SDG&E/CAISO)  (CVXPY)      (Claude LLM)
+(SDG&E/CAISO)  (CVXPY)      (OpenAI LLM)
 ```
 
 ### Three-Stage Pipeline
@@ -40,19 +40,20 @@ Data Tools   Optimization    Explanation
 ### Prerequisites
 
 - Python 3.8+
-- Anthropic API key
+- OpenAI API key
 
 ### Setup
 
 ```bash
 # Clone or download the project files
-cd dragent
+cd DR-Agent
 
-# Install dependencies
+# Install dependencies and register the package (needed for `import dragent`)
 pip install -r requirements.txt
+pip install -e .
 
 # Set your API key
-export ANTHROPIC_API_KEY='your-api-key-here'
+export OPENAI_API_KEY='your-api-key-here'
 ```
 
 ## 🚀 Quick Start
@@ -60,7 +61,7 @@ export ANTHROPIC_API_KEY='your-api-key-here'
 ### Basic Usage
 
 ```python
-from dr_agent import create_dr_agent
+from dragent import create_dr_agent
 
 # Create the agent
 agent = create_dr_agent()
@@ -105,7 +106,8 @@ with more renewable energy available.
 ### Run Demo
 
 ```bash
-python demo.py
+pip install -e .
+python examples/demo.py
 ```
 
 This will show:
@@ -116,7 +118,7 @@ This will show:
 ### Run Evaluation
 
 ```bash
-python evaluation.py
+python scripts/evaluation.py
 ```
 
 This compares Agent vs Baseline on:
@@ -261,7 +263,7 @@ When describing appliances to the agent, use this format:
 ### Baseline LLM (No Tools)
 
 ```python
-from dr_agent import create_baseline_llm, run_baseline_recommendation
+from dragent import create_baseline_llm, run_baseline_recommendation
 
 llm = create_baseline_llm()
 response = run_baseline_recommendation(llm, "Help me charge my EV...")
@@ -277,7 +279,7 @@ response = run_baseline_recommendation(llm, "Help me charge my EV...")
 ### Agentic Framework (With Tools)
 
 ```python
-from dr_agent import create_dr_agent
+from dragent import create_dr_agent
 
 agent = create_dr_agent()
 response = agent.invoke({"input": "Help me charge my EV..."})
@@ -377,7 +379,7 @@ optimize_schedule(
 
 ### "API key not found"
 ```bash
-export ANTHROPIC_API_KEY='your-key-here'
+export OPENAI_API_KEY='your-key-here'
 # or add to ~/.bashrc or ~/.zshrc
 ```
 
@@ -403,4 +405,4 @@ ECE 285 - Agentic AI & LLMs for Smart Grids (Winter 2026)
 
 ---
 
-**Questions?** Check the demo.py for working examples or run evaluation.py to see comprehensive test cases!
+**Questions?** See `examples/demo.py` for working examples or run `scripts/evaluation.py` for comprehensive test cases.

@@ -1,7 +1,7 @@
 """
-Ablation Test 02 of 10 — Appliance Count Scaling
+Ablation Test 01 of 10 — Appliance Count Scaling
 ==================================================
-Count  : 3 appliances (Dishwasher, Clothes dryer, EV)
+Count  : 1 appliance (Dishwasher)
 Goal   : cost minimisation
 
 Baseline  — LLM answers the query directly from general knowledge.
@@ -14,25 +14,22 @@ Agentic   — Agent receives the same query, calls fetch_sdge_prices,
             actual solver computation.
 
 Run with:
-    python test_02_count3.py
+    python tests/test_ablation_appliance_count_1.py
 """
 
 from dotenv import load_dotenv
 load_dotenv()
 
 import re
-from dr_agent import create_dr_agent, create_baseline_llm, run_baseline_recommendation
+from pathlib import Path
+from dragent import create_dr_agent, create_baseline_llm, run_baseline_recommendation
 
-QUERY = """I need to schedule three appliances tonight to save money.
-
-1. Dishwasher: needs 3.6 kWh, available 8 PM to 11 PM, draws at most 2 kW
-2. Clothes Dryer: needs 4.5 kWh, available 9 PM to midnight, draws at most 4 kW
-3. EV: needs 16 kWh, available 3 PM to 10 PM, draws at most 11 kW
-
-My household peak limit is 15 kW."""
+QUERY = """I need to run my dishwasher tonight to save money.
+It needs 3.6 kWh of energy, I can run it any time between 8 PM and 11 PM,
+and it draws at most 2 kW. My household peak limit is 15 kW."""
 
 print("=" * 60)
-print("TEST 02 — 3 Appliances (Dishwasher, Clothes dryer, EV)")
+print("TEST 01 — 1 Appliance (Dishwasher)")
 print("=" * 60)
 print(f"\nQuery:\n{QUERY}\n")
 
@@ -283,7 +280,7 @@ print("      Agentic Cost Red. and Feas. are computed from the solver.")
 
 lines = []
 lines.append("=" * 60)
-lines.append("TEST 02 — 3 Appliances (Dishwasher, Clothes Dryer, EV)")
+lines.append("TEST 01 — 1 Appliance (Dishwasher)")
 lines.append("=" * 60)
 lines.append("\nQUERY")
 lines.append("-" * 60)
@@ -331,7 +328,8 @@ lines.append("=" * 60)
 lines.append("\nNote: Baseline Cost Red. is self-reported by the LLM and unverifiable.")
 lines.append("      Agentic Cost Red. and Feas. are computed from the solver.")
 
-with open("test_02_results.txt", "w") as f:
+_results_path = Path(__file__).resolve().parent.parent / f"{Path(__file__).stem}_results.txt"
+with open(_results_path, "w") as f:
     f.write("\n".join(lines))
 
-print("\nResults saved to test_02_results.txt")
+print(f"\nResults saved to {_results_path}")

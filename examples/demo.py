@@ -4,7 +4,7 @@ Shows basic usage and example outputs
 """
 
 import os
-from dr_agent import create_dr_agent, create_baseline_llm, run_baseline_recommendation
+from dragent import create_dr_agent, create_baseline_llm, run_baseline_recommendation
 
 
 def demo_basic_usage():
@@ -141,9 +141,9 @@ Should I copy them or do something different? I have an EV that needs charging."
 
 if __name__ == "__main__":
     # Check for API key
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("ERROR: Please set ANTHROPIC_API_KEY environment variable")
-        print("Example: export ANTHROPIC_API_KEY='your-key-here'")
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("ERROR: Please set OPENAI_API_KEY environment variable")
+        print("Example: export OPENAI_API_KEY='your-key-here'")
         exit(1)
     
     # Run demos

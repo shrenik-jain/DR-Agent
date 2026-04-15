@@ -35,11 +35,11 @@ Metrics (per scenario × architecture):
 
 Usage
 -----
-    python ablations.py                         # all groups, all architectures
-    python ablations.py --group sparsity        # one group
-    python ablations.py --arch baseline         # one architecture only
-    python ablations.py --dry-run               # baseline + solver checks only
-    python ablations.py --output my_run.json
+    python scripts/ablations.py                 # all groups, all architectures
+    python scripts/ablations.py --group sparsity
+    python scripts/ablations.py --arch baseline
+    python scripts/ablations.py --dry-run
+    python scripts/ablations.py --output my_run.json
 
 Outputs
 -------
@@ -59,7 +59,7 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from dr_agent import (
+from dragent import (
     create_dr_agent,
     create_baseline_llm,
     fetch_caiso_carbon,
@@ -111,7 +111,7 @@ def _weather() -> str:
 # and cost-reduction metrics are computed consistently.
 # ==============================================================================
 
-# Static price array matching dr_agent.py's fetch_sdge_prices output
+# Static price array matching dragent.agent.fetch_sdge_prices output
 _STATIC_PRICES_JSON = json.dumps({
     "utility": "SDG&E", "tariff": "EV-TOU-5", "date": "static",
     "prices": [
@@ -123,7 +123,7 @@ _STATIC_PRICES_JSON = json.dumps({
     "currency": "USD"
 })
 
-# Static carbon array matching dr_agent.py's fetch_caiso_carbon output
+# Static carbon array matching dragent.agent.fetch_caiso_carbon output
 def _static_carbon_intensity(h: int) -> float:
     if h < 6:    return 250 + h * 5
     if h < 10:   return 300 + (h - 6) * 40

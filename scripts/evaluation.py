@@ -8,9 +8,10 @@ Compares Agentic AI vs Baseline LLM on:
 
 import json
 import re
+from pathlib import Path
 from typing import Dict, List, Tuple
 import numpy as np
-from dr_agent import (
+from dragent import (
     create_dr_agent,
     create_baseline_llm,
     run_baseline_recommendation,
@@ -449,12 +450,13 @@ def run_evaluation():
             print(f"  Faithfulness: {total_faith/count:.2f}")
             print(f"  Overall: {(total_obj + total_feas + total_faith)/(3*count):.2f}")
     
-    # Save detailed results
-    with open("/home/claude/evaluation_results.json", "w") as f:
-        json.dumps(results, f, indent=2, default=str)
-    
+    # Save detailed results next to repo root
+    out_path = Path(__file__).resolve().parent.parent / "evaluation_results.json"
+    with open(out_path, "w") as f:
+        json.dump(results, f, indent=2, default=str)
+
     print(f"\n{'=' * 80}")
-    print("Detailed results saved to evaluation_results.json")
+    print(f"Detailed results saved to {out_path}")
     print(f"{'=' * 80}")
     
     return results
