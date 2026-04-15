@@ -399,10 +399,6 @@ problem.solve(solver=cp.SCS)
 
 MIT License - feel free to use for your project!
 
-## 👥 Contributors
-
-ECE 285 - Agentic AI & LLMs for Smart Grids (Winter 2026)
-
 ---
 
 **Questions?** See `examples/demo.py` for working examples or run `scripts/evaluation.py` for comprehensive test cases.
